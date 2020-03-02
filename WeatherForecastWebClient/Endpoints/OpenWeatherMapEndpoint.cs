@@ -1,9 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Text;
 
 namespace WeatherForecastWebClient.Endpoints
 {
+    public enum EndpointTypes
+    {
+        CURRENTWEATHER,
+        FORECAST
+    }
+
     class OpenWeatherMapEndpoint
     {
         private const string baseCurrentWeatherEndpoint = "http://api.openweathermap.org/data/2.5/weather";
@@ -12,16 +16,34 @@ namespace WeatherForecastWebClient.Endpoints
         public string apiKey { get; set; }
         public string units { get; set; }
 
+        private string currentEndpoint;
+
         public OpenWeatherMapEndpoint()
         {
             apiKey = "c31c79a010a54878ef9b05feee7f2503";
             units = "metric";
+
+            // Default endpoint
+            this.currentEndpoint = baseCurrentWeatherEndpoint;
+        }
+
+        public void setCurrentWeatherEndpoint(EndpointTypes endpointTypes)
+        {
+            switch(endpointTypes)
+            {
+                case EndpointTypes.CURRENTWEATHER:
+                    this.currentEndpoint = baseCurrentWeatherEndpoint; break;
+                case EndpointTypes.FORECAST:
+                    this.currentEndpoint = baseForecastEndpoint; break;
+                default:
+                    this.currentEndpoint = baseCurrentWeatherEndpoint; break;
+            }
         }
 
         public string getByCityNameEndpoint(string cityName)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(baseCurrentWeatherEndpoint);
+            stringBuilder.Append(this.currentEndpoint);
             stringBuilder.Append("?q=");
             stringBuilder.Append(cityName);
             stringBuilder.Append("&appid=");
@@ -35,7 +57,7 @@ namespace WeatherForecastWebClient.Endpoints
         public string getByCityNameEndpoint(string cityName, string countryCode)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(baseCurrentWeatherEndpoint);
+            stringBuilder.Append(this.currentEndpoint);
             stringBuilder.Append("?q=");
             stringBuilder.Append(cityName);
             stringBuilder.Append(",");
@@ -51,7 +73,7 @@ namespace WeatherForecastWebClient.Endpoints
         public string getByCityNameEndpoint(string cityName, string state, string countryCode)
         {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(baseCurrentWeatherEndpoint);
+            stringBuilder.Append(this.currentEndpoint);
             stringBuilder.Append("?q=");
             stringBuilder.Append(cityName);
             stringBuilder.Append(",");
