@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Text.Json;
+using WeatherForecastWebClient.Controllers;
 using WeatherForecastWebClient.Endpoints;
 using WeatherForecastWebClient.ForecastModel;
 using WeatherForecastWebClient.Models;
 using WeatherForecastWebClient.Output;
 using WeatherForecastWebClient.Parser;
+using WeatherForecastWebClient.POCO;
 
 namespace WeatherForecastWebClient
 {
@@ -12,62 +14,110 @@ namespace WeatherForecastWebClient
     {
         static void Main(string[] args)
         {
-            string response = String.Empty;
+            //OpenWeatherMap API
+            //openWeatherMapCurrentAPI();
+            //openWeatherMapForecastAPI();
 
-            RestClient restClient = new RestClient();
-            OpenWeatherMapEndpoint openWeatherMapEndpoint = new OpenWeatherMapEndpoint();
+            //AccuWeather API
+            //accuWeatherCurrentConditionsAPI();
+            //accuWeatherForecastAPI();
 
-            // Set Endpoint to Current Weather Endpoint
-            openWeatherMapEndpoint.setCurrentWeatherEndpoint(EndpointTypes.CURRENTWEATHER);
+            //WeatherBit API
+            //weatherBitCurrentAPI();
+            weatherBitForecastAPI();
 
-            restClient.endpoint = openWeatherMapEndpoint.getByCityNameEndpoint("Valletta");
-            response = restClient.makeRequest();
-            processOpenWeatherMapResponse(response);
-
-            restClient.endpoint = openWeatherMapEndpoint.getByCityNameEndpoint("London");
-            response = restClient.makeRequest();
-            processOpenWeatherMapResponse(response);
-
-            // Set Endpoint to Forecast Endpoint
-            openWeatherMapEndpoint.setCurrentWeatherEndpoint(EndpointTypes.FORECAST);
-
-            restClient.endpoint = openWeatherMapEndpoint.getByCityNameEndpoint("Valletta");
-            response = restClient.makeRequest();
-            processOpenWeatherMapForecastModel(response);
-
-            //Console.ReadKey();
+            Console.ReadKey();
         }
 
-        static void processOpenWeatherMapResponse(string response)
+        static void openWeatherMapCurrentAPI()
         {
             Out output = new Out();
 
-            //OpenWeatherMapWeatherModel openWeatherMapWeatherModel = JsonSerializer.Deserialize<OpenWeatherMapWeatherModel>(response);
-            JSONParser<OpenWeatherMapWeatherModel> jsonParser = new JSONParser<OpenWeatherMapWeatherModel>();
-            OpenWeatherMapWeatherModel deserializedOpenWeatherMapModel = jsonParser.ParseJSON(response);
+            OpenWeatherMapController openWeatherMapController = new OpenWeatherMapController();
 
-            output.outputToConsole($"Temperature: {deserializedOpenWeatherMapModel.main.temp}");
+            output.outputToConsole("\n**** Open Weather Map Current Weather ****");
 
-            output.outputToConsole(response);
+            string cityName = "Valletta";
+            output.outputToConsole($"Temperature for {cityName}: {openWeatherMapController.getCurrentTemperature(cityName, EndpointTypes.CURRENT)}");
+
+            cityName = "London";
+            output.outputToConsole($"Temperature for {cityName}: {openWeatherMapController.getCurrentTemperature(cityName, EndpointTypes.CURRENT)}");
         }
 
-        static void processOpenWeatherMapForecastModel(string response)
+        static void openWeatherMapForecastAPI()
         {
             Out output = new Out();
 
-            //OpenWeatherMapForecastModel openWeatherMapForecastModel = JsonSerializer.Deserialize<OpenWeatherMapForecastModel>(response);
-            JSONParser<OpenWeatherMapForecastModel> jsonParser = new JSONParser<OpenWeatherMapForecastModel>();
-            OpenWeatherMapForecastModel deserializedOpenWeatherForecastModel = jsonParser.ParseJSON(response);
+            OpenWeatherMapController openWeatherMapController = new OpenWeatherMapController();
 
             output.outputToConsole("\n**** Open Weather Map Forecast ****");
 
-            foreach(ForecastModel.ListEmptyObject forecastMain in deserializedOpenWeatherForecastModel.list)
-            {
-                DateTime dateTime = new DateTime(1970,1,1).AddSeconds(forecastMain.dt);
-                output.outputToConsole($"Date/Time: {dateTime.ToString()} \nTemperature: {forecastMain.main.temp}");
-            }
+            string cityName = "Valletta";
 
-            //output.outputToConsole(response);
+            output.outputToConsole($"Forecast weather for: {cityName}");
+
+            foreach (OpenWeatherMapForecast forecast in openWeatherMapController.getForecastList(cityName, EndpointTypes.FORECAST))
+            {
+                output.outputToConsole($"Date/Time: {forecast.dateTime} Temperature: {forecast.temperature}");
+            }
+        }
+
+        static void accuWeatherCurrentConditionsAPI()
+        {
+            Out output = new Out();
+
+            AccuWeatherController accuWeatherController = new AccuWeatherController();
+
+            output.outputToConsole("\n**** AccuWeather Current Conditions ****");
+
+            string cityName = "Valletta";
+
+            output.outputToConsole($"Location key for city {cityName} is {accuWeatherController.getCurrentWeather(cityName)}");
+        }
+
+        static void accuWeatherForecastAPI()
+        {
+            Out output = new Out();
+
+            AccuWeatherController accuWeatherController = new AccuWeatherController();
+
+            output.outputToConsole("\n**** AccuWeather Forecast ****");
+
+            string cityName = "Valletta";
+
+            foreach (AccuWeatherForecast forecast in accuWeatherController.getForecast(cityName))
+            {
+                output.outputToConsole($"{forecast.getDateTime().ToString()} Minimum: {forecast.getMinimum()} Maximum: {forecast.getMaximum()}");
+            }
+        }
+
+        static void weatherBitCurrentAPI()
+        {
+            Out output = new Out();
+
+            WeatherBitController weatherBitController = new WeatherBitController();
+
+            output.outputToConsole("\n**** WeatherBit Current Weather ****");
+
+            string cityName = "Valletta";
+
+            output.outputToConsole($"Temperature for {cityName}: {weatherBitController.getCurrentWeather(cityName)}");
+        }
+
+        static void weatherBitForecastAPI()
+        {
+            Out output = new Out();
+
+            WeatherBitController weatherBitController = new WeatherBitController();
+
+            output.outputToConsole("\n**** WeatherBit Forecast ****");
+
+            string cityName = "Valletta";
+
+            foreach (WeatherBitForecast forecast in weatherBitController.getWeatherForecast(cityName))
+            {
+                output.outputToConsole($"{forecast.getDateTime().ToString()} Minimum: {forecast.getMinTemp()} Maximum: {forecast.getMaxTemp()}");
+            }
         }
     }
 }

@@ -4,10 +4,10 @@ namespace WeatherForecastWebClient.ForecastModel
 {
     class OpenWeatherMapForecastModel
     {
-        public List<ListEmptyObject> list { get; set; }
+        public List<UnnamedObject> list { get; set; }
     }
 
-    class ListEmptyObject
+    class UnnamedObject
     {
         public Main main { get; set; }
         public long dt { get; set; }
@@ -23,6 +23,7 @@ namespace WeatherForecastWebClient.ForecastModel
         public float sea_level { get; set; }
         public float grnd_level { get; set; }
         public float humidity { get; set; }
+        public float temp_kf { get; set; }
     }
 
     //class Date

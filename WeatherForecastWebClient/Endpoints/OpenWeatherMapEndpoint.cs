@@ -1,49 +1,25 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 
 namespace WeatherForecastWebClient.Endpoints
 {
-    public enum EndpointTypes
+    class OpenWeatherMapEndpoint : Endpoint
     {
-        CURRENTWEATHER,
-        FORECAST
-    }
+        public OpenWeatherMapEndpoint() :
+            base("c31c79a010a54878ef9b05feee7f2503",
+                 "http://api.openweathermap.org/data/",
+                 new Dictionary<EndpointTypes, string> {
+                     { EndpointTypes.CURRENT, "weather" },
+                     { EndpointTypes.FORECAST, "forecast" }
+                 },
+                 "2.5",
+                 "metric") { }
 
-    class OpenWeatherMapEndpoint
-    {
-        private const string baseCurrentWeatherEndpoint = "http://api.openweathermap.org/data/2.5/weather";
-        private const string baseForecastEndpoint = "http://api.openweathermap.org/data/2.5/forecast";
-
-        public string apiKey { get; set; }
-        public string units { get; set; }
-
-        private string currentEndpoint;
-
-        public OpenWeatherMapEndpoint()
+        public string getByCityNameEndpoint(string cityName, EndpointTypes endpointType)
         {
-            apiKey = "c31c79a010a54878ef9b05feee7f2503";
-            units = "metric";
-
-            // Default endpoint
-            this.currentEndpoint = baseCurrentWeatherEndpoint;
-        }
-
-        public void setCurrentWeatherEndpoint(EndpointTypes endpointTypes)
-        {
-            switch(endpointTypes)
-            {
-                case EndpointTypes.CURRENTWEATHER:
-                    this.currentEndpoint = baseCurrentWeatherEndpoint; break;
-                case EndpointTypes.FORECAST:
-                    this.currentEndpoint = baseForecastEndpoint; break;
-                default:
-                    this.currentEndpoint = baseCurrentWeatherEndpoint; break;
-            }
-        }
-
-        public string getByCityNameEndpoint(string cityName)
-        {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(this.currentEndpoint);
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append($"{version}");
+            stringBuilder.Append($"/{endpointTypeDictionary[endpointType]}");
             stringBuilder.Append("?q=");
             stringBuilder.Append(cityName);
             stringBuilder.Append("&appid=");
@@ -54,10 +30,11 @@ namespace WeatherForecastWebClient.Endpoints
             return stringBuilder.ToString();
         }
 
-        public string getByCityNameEndpoint(string cityName, string countryCode)
+        public string getByCityNameEndpoint(string cityName, string countryCode, EndpointTypes endpointType)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(this.currentEndpoint);
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append($"{version}");
+            stringBuilder.Append($"/{endpointTypeDictionary[endpointType]}");
             stringBuilder.Append("?q=");
             stringBuilder.Append(cityName);
             stringBuilder.Append(",");
@@ -70,10 +47,11 @@ namespace WeatherForecastWebClient.Endpoints
             return stringBuilder.ToString();
         }
 
-        public string getByCityNameEndpoint(string cityName, string state, string countryCode)
+        public string getByCityNameEndpoint(string cityName, string state, string countryCode, EndpointTypes endpointType)
         {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(this.currentEndpoint);
+            StringBuilder stringBuilder = new StringBuilder(baseEndpoint);
+            stringBuilder.Append($"{version}");
+            stringBuilder.Append($"/{endpointTypeDictionary[endpointType]}");
             stringBuilder.Append("?q=");
             stringBuilder.Append(cityName);
             stringBuilder.Append(",");
