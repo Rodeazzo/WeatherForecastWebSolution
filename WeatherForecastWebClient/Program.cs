@@ -24,9 +24,17 @@ namespace WeatherForecastWebClient
 
             //WeatherBit API
             //weatherBitCurrentAPI();
-            weatherBitForecastAPI();
+            //weatherBitForecastAPI();
 
-            Console.ReadKey();
+            //DarkSky API
+            //darkSkyForecastAPI();
+
+            //Weather2020 API
+            //weather2020ForecastAPI();
+
+            //ClimaCell API
+            //climaCellCurrentAPI();
+            climaCellForecastAPI();
         }
 
         static void openWeatherMapCurrentAPI()
@@ -117,6 +125,81 @@ namespace WeatherForecastWebClient
             foreach (WeatherBitForecast forecast in weatherBitController.getWeatherForecast(cityName))
             {
                 output.outputToConsole($"{forecast.getDateTime().ToString()} Minimum: {forecast.getMinTemp()} Maximum: {forecast.getMaxTemp()}");
+            }
+        }
+
+        static void darkSkyForecastAPI()
+        {
+            Out output = new Out();
+
+            DarkSkyController darkSkyController = new DarkSkyController();
+
+            output.outputToConsole("\n**** DarkSky Forecast ****");
+
+            AccuWeatherController accuWeatherController = new AccuWeatherController();
+
+            string position = accuWeatherController.getLocationGeoPosition("Valletta");
+
+            foreach (DarkSkyForecast forecast in darkSkyController.getForecast(position))
+            {
+                output.outputToConsole($"Timezone {forecast.getTimezone()} Date: {forecast.getDateTime()} Minimum: {forecast.getMinTemp()} Maximum: {forecast.getMaxTemp()}");
+            }
+        }
+
+        static void weather2020ForecastAPI()
+        {
+            Out output = new Out();
+
+            Weather2020Controller weather2020Controller = new Weather2020Controller();
+
+            output.outputToConsole("\n**** Weather2020 Forecast ****");
+
+            AccuWeatherController accuWeatherController = new AccuWeatherController();
+
+            string position = accuWeatherController.getLocationGeoPosition("Los Angeles");
+
+            foreach (Weather2020Forecast forecast in weather2020Controller.getForecast(position))
+            {
+                output.outputToConsole($"Date: {forecast.getDateTime()} Minimum: {forecast.getMinimum()} Maximum: {forecast.getMaximum()}");
+            }
+        }
+
+        static void climaCellCurrentAPI()
+        {
+            Out output = new Out();
+
+            ClimaCellController climaCellController = new ClimaCellController();
+
+            output.outputToConsole("\n**** ClimaCell Current Weather ****");
+
+            AccuWeatherController accuWeatherController = new AccuWeatherController();
+
+            string cityName = "Valletta";
+            string position = accuWeatherController.getLocationGeoPosition(cityName);
+            string latitude = position.Substring(0, position.IndexOf(','));
+            string longitude = position.Substring(position.IndexOf(',') + 1);
+
+            output.outputToConsole($"Temperature for {cityName}: {climaCellController.getCurrentWeather(latitude, longitude, EndpointTypes.CURRENT)}");
+        }
+
+        static void climaCellForecastAPI()
+        {
+            Out output = new Out();
+
+            ClimaCellController climaCellController = new ClimaCellController();
+
+            output.outputToConsole("\n**** ClimaCell Forecast ****");
+
+            AccuWeatherController accuWeatherController = new AccuWeatherController();
+
+            string cityName = "Valletta";
+            string position = accuWeatherController.getLocationGeoPosition(cityName);
+            string latitude = position.Substring(0, position.IndexOf(','));
+            string longitude = position.Substring(position.IndexOf(',') + 1);
+
+            foreach (ClimaCellForecast forecast in climaCellController.getForecast(latitude, longitude, EndpointTypes.FORECAST))
+            {
+                output.outputToConsole($"Date: {forecast.getDateTime()} Value: {forecast.getValue()} Units: {forecast.getUnits()}");
             }
         }
     }

@@ -30,6 +30,23 @@ namespace WeatherForecastWebClient.Controllers
             return locationKey;
         }
 
+        public string getLocationGeoPosition(string cityName)
+        {
+            restClient.endpoint = accuWeatherEndpoint.getLocationsEndpoint(cityName);
+            string response = restClient.makeRequest();
+
+            JSONParser<List<AccuWeatherLocationsModel>> jsonParser = new JSONParser<List<AccuWeatherLocationsModel>>();
+
+            List<AccuWeatherLocationsModel> deserialisedAccuWeatherModel = jsonParser.ParseJSON(response, Parser.Version.NETCore3);
+
+            float latitude = deserialisedAccuWeatherModel[0].GeoPosition.Latitude;
+            float longitude = deserialisedAccuWeatherModel[0].GeoPosition.Longitude;
+
+            string geoPosition = latitude + "," + longitude;
+
+            return geoPosition;
+        }
+
         public float getCurrentWeather(string cityName)
         {
             restClient.endpoint = accuWeatherEndpoint.getCurrentConditionsEndpoint(getLocationKey(cityName));

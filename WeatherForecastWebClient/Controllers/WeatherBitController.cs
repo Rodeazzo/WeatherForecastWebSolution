@@ -42,9 +42,9 @@ namespace WeatherForecastWebClient.Controllers
 
             JSONParser<WeatherBitForecastModel> jsonParser = new JSONParser<WeatherBitForecastModel>();
 
-            WeatherBitForecastModel deserialisedWeatherBitWeatherModel = jsonParser.ParseJSON(response, Parser.Version.NETCore3);
+            WeatherBitForecastModel deserialisedWeatherBitForecastModel = jsonParser.ParseJSON(response, Parser.Version.NETCore3);
 
-            foreach(Dataf data in deserialisedWeatherBitWeatherModel.data)
+            foreach(Dataf data in deserialisedWeatherBitForecastModel.data)
             {
                 forecastList.Add(new WeatherBitForecast(data.datetime, data.min_temp, data.max_temp));
             }
